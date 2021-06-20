@@ -1,0 +1,45 @@
+.search-form-container {
+  margin-top: 15px;
+  display: flex;
+  flex: 1;
+  flex-direction: row;
+}
+.search-input-container {
+  display: flex;
+  flex: 1;
+}
+.search-input {
+  background: #ebdcc9;
+}
+.search-button-container {
+  display: flex;
+  flex: 0;
+  padding-left: 10px;
+}
+.loader-container {
+  text-align: center;
+  padding: 30px 0;
+}
+.tweet {
+  margin: 15px 0;
+  padding: 15px;
+  font-size: 21px;
+  overflow: hidden;
+}
+.tweet > p {
+  margin-top: 0;
+  margin-bottom: 3px;
+}
+.tweet-action-area {
+  padding-top: 10px;
+  text-align: right;
+}
+svg.twitter-logo {
+  display: block;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin: -50px 0 0 -50px;
+  opacity: 0.2;
+  font-size: 100px;
+}

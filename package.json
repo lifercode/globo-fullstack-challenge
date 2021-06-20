@@ -1,0 +1,17 @@
+{
+  "name": "globo",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "server",
+    "client"
+  ],
+  "scripts": {
+    "server": "yarn workspace @globo/server dev",
+    "client": "yarn workspace @globo/client start",
+    "start": "concurrently --kill-others-on-fail \"yarn server\"  \"yarn client\""
+  },
+  "dependencies": {
+    "concurrently": "^6.2.0"
+  }
+}

@@ -1,0 +1,40 @@
+.container {
+  display: flex;
+  flex: 1;
+  flex-direction: row;
+  padding-top: 20px;
+}
+.device-image {
+  position: absolute;
+  z-index: -1;
+}
+.device-container-phone {
+  width: 300px;
+  padding: 33px 13px;
+  margin-right: 50px;
+  margin-left: 50px;
+}
+.device-image-phone {
+  top: 30px;
+  left: -10px;
+  width: 390px;
+}
+.device-iframe-phone {
+  padding-top: 30px;
+  width: 242px;
+  height: 475px;
+}
+.device-container-tv {
+  width: 800px;
+  padding: 67px 0 0 6px;
+  position: relative;
+}
+.device-image-tv {
+  top: 60px;
+  left: 0px;
+  width: 800px;
+}
+.device-iframe-tv {
+  width: 788px;
+  height: 441px;
+}

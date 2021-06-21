@@ -75,13 +75,15 @@ Onde os tweets escolhidos são exibidos em tempo real.
 `/preview`
 Onde você consegue visualizar e testar todo o fluxo em apenas uma tela.
 
+#### Home
+
 ![Create React Native Component](https://github.com/lifercode/static/blob/main/globo/home.png)
 
-Quando você instalar a Extensão o desenvolvimento em React Native será bem mais divertido.
+#### Tweets & Telão
 
 ![Create React Native Component](https://github.com/lifercode/static/blob/main/globo/tweets-telao-screen.gif)
 
-Quando você instalar a Extensão o desenvolvimento em React Native será bem mais divertido.
+#### Preview
 
 ![Create React Native Component](https://github.com/lifercode/static/blob/main/globo/preview-screen.gif)
 

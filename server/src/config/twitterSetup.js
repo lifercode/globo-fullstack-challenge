@@ -1,10 +1,8 @@
 const needle = require('needle')
-const { Tweet } = require('./models')
+const Tweet = require('../models/Tweet')
 
 const rulesURL = process.env.TWITTER_API_URL + '/tweets/search/stream/rules'
 const streamURL = process.env.TWITTER_API_URL + '/tweets/search/stream?tweet.fields=public_metrics,created_at&expansions=author_id'
-
-const rules = [{ value: 'bbb' }]
 
 const requestOptions = {
   headers: {
@@ -19,7 +17,7 @@ async function getRules() {
   return response.body
 }
 
-async function setRules() {
+async function setRules(rules) {
   const data = { add: rules }
   const response = await needle('post', rulesURL, data, requestOptions)
 
@@ -64,15 +62,13 @@ function streamTweets(socket) {
   return stream
 }
 
-async function setup(io) {
-  console.log('Client connected...')
-
+async function twitterSetup(io, hashtag) {
   let currentRules
 
   try {
     currentRules = await getRules()
     await deleteRules(currentRules)
-    await setRules()
+    await setRules([{ value: hashtag }])
   } catch (error) {
     console.error(error)
     process.exit(1)
@@ -89,6 +85,7 @@ async function setup(io) {
     }, 2 ** timeout)
     streamTweets(io)
   })
+
 }
 
-module.exports = setup
+module.exports = twitterSetup

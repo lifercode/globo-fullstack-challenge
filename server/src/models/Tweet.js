@@ -7,6 +7,4 @@ const Tweet = mongoose.model('Tweet', {
   created_at: String
 })
 
-module.exports = {
-  Tweet
-}
+module.exports = Tweet

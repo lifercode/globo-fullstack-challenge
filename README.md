@@ -2,7 +2,7 @@
 <p align="center">
   <img src="https://github.com/lifercode/static/blob/main/globo/logo-globo.png" alt="Logo">
 
-  <h3 align="center">Globo Challenge Fullstack</h3>
+  <h3 align="center">Globo Fullstack Challenge</h3>
 </p>
 
 

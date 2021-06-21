@@ -1,91 +1,95 @@
 import React, { useState, useEffect } from 'react'
-import Button from '@material-ui/core/Button'
-import RefreshIcon from '@material-ui/icons/Refresh'
-import TwitterIcon from '@material-ui/icons/Twitter'
-import CircularProgress from '@material-ui/core/CircularProgress'
-import Container from '@material-ui/core/Container'
-import Paper from '@material-ui/core/Paper'
-import DeleteIcon from '@material-ui/icons/Delete'
-import CheckIcon from '@material-ui/icons/Check'
-import SearchIcon from '@material-ui/icons/Search'
-import InputAdornment from '@material-ui/core/InputAdornment'
-import TextField from '@material-ui/core/TextField'
-import socketIOClient from 'socket.io-client'
+import {
+  CircularProgress,
+  InputAdornment,
+  Container,
+  TextField,
+  Button,
+  Paper
+} from '@material-ui/core'
+import {
+  Refresh as RefreshIcon,
+  Twitter as TwitterIcon,
+  Delete as DeleteIcon,
+  Search as SearchIcon,
+  Check as CheckIcon
+} from '@material-ui/icons'
 
+import { websocketConnect } from '../config/websocket'
 import { fromNow } from '../helpers/date'
 import api from '../config/api'
 import '../styles/page-tweets.css'
 
 export default function Tweets() {
   const [tweets, setTweets] = useState([])
-  const [count, setCount] = useState(0)
-  const [approvedTweets, setApprovedTweets] = useState([])
-  const [removedTweets, setRemovedTweets] = useState([])
+  const [newTweetsCount, setCount] = useState(0)
   const [hashtag, setHashtag] = useState('')
-  const [isLoading, setLoading] = useState(false)
-  const [isApproveLoading, setApproveLoading] = useState(null)
+  const [isTweetsLoading, setTweetsLoading] = useState(false)
+  const [isTweetApproveLoading, setTweetApproveLoading] = useState(null)
+
   const hasTweets = Boolean(tweets.length)
 
-  async function handlerSearch(e) {
+  function getTweetStyle(tweetId) {
+    return {
+      opacity: tweetId === isTweetApproveLoading ? 0.4 : 1
+    }
+  }
+
+  function clearAllTweets() {
+    setCount(0)
+    setTweets([])
+    api.post('/clear')
+  }
+
+  function removeTweet(tweet) {
+    setTweets(tweets.filter(({ id }) => id !== tweet.id))
+  }
+
+  async function getNewTweets() {
+    setTweetsLoading(true)
+    const result = await api.get('/tweets/new')
+    result.data && setTweets([...result.data, ...tweets].slice(0, 50))
+    setCount(0)
+    setTweetsLoading(false)
+  }
+
+  async function approveTweet(tweet) {
+    setTweetApproveLoading(tweet.id)
+    await api.post('/approve', { tweet })
+    setTweets(tweets.filter(({ id }) => id !== tweet.id))
+    setTweetApproveLoading(null)
+  }
+
+  function handlerInputSearchChange(e) {
+    const normalizedValue = e.target.value.replace(' ', '').replace('#', '')
+    setHashtag(normalizedValue)
+  }
+
+  async function handlerInputSearchSubmit(e) {
     e.preventDefault()
-    setLoading(true)
+    setTweetsLoading(true)
     const result = await api.get(`/tweets/recent?hashtag=${hashtag}`)
     result.data
       ? setTweets(result.data)
       : alert(`Nenhum tweet encontrado com a hashtag #${hashtag}`)
     setHashtag('')
     setCount(0)
-    setLoading(false)
-  }
-
-  async function handlerTweetApprove(value) {
-    setApproveLoading(value.id)
-    const updatedTweets = [value, ...approvedTweets]
-    await api.post('/approve', { tweet: value })
-    setApprovedTweets(updatedTweets)
-    setTweets(tweets.filter(({ id }) => id !== value.id))
-    setApproveLoading(null)
-  }
-
-  function clear() {
-    setCount(0)
-    setTweets([])
-    api.post('/clear')
-  }
-
-  async function update() {
-    setLoading(true)
-    const result = await api.get('/tweets/new')
-    if (result.data) {
-      setTweets([...result.data, ...tweets].slice(0, 50))
-    }
-    setCount(0)
-    setLoading(false)
-  }
-
-  function handlerTweetRemove(value) {
-    setRemovedTweets([value, ...removedTweets])
-    setTweets(tweets.filter(({ id }) => id !== value.id))
-  }
-
-  function handleInputChange(e) {
-    const normalizedValue = e.target.value.replace(' ', '').replace('#', '')
-    setHashtag(normalizedValue)
+    setTweetsLoading(false)
   }
 
   useEffect(() => {
-    const socket = socketIOClient(process.env.REACT_APP_API_URL, { transport : ['websocket'] })
+    const socket = websocketConnect()
 
-    function handlerCount(value) {
-      if (count === 0 || value <= 100) {
+    function handlerNewTweetsCount(value) {
+      if (newTweetsCount === 0 || value <= 100) {
         setCount(value)
       }
     }
 
-    socket.on("tweetcount", handlerCount)
+    socket.on("tweetcount", handlerNewTweetsCount)
   
     return () => {
-      socket.off("tweetcount", handlerCount)
+      socket.off("tweetcount", handlerNewTweetsCount)
     }
   }, [])
 
@@ -93,7 +97,7 @@ export default function Tweets() {
     <Container maxWidth="sm">
 
       {!hasTweets && (
-        <form onSubmit={handlerSearch}>
+        <form onSubmit={handlerInputSearchSubmit}>
           <div className="search-form-container">
             <div className="search-input-container">
               <TextField
@@ -102,10 +106,10 @@ export default function Tweets() {
                 placeholder="hashtag"
                 variant="outlined"
                 color="primary"
-                disabled={isLoading}
+                disabled={isTweetsLoading}
                 fullWidth
                 value={hashtag}
-                onChange={handleInputChange}
+                onChange={handlerInputSearchChange}
                 autoFocus
                 InputProps={{
                   startAdornment: (
@@ -118,7 +122,7 @@ export default function Tweets() {
             </div>
             <div className="search-button-container">
               <Button
-                disabled={isLoading || !hashtag.length}
+                disabled={isTweetsLoading || !hashtag.length}
                 variant="contained"
                 color="primary"
                 type="submit"
@@ -132,7 +136,7 @@ export default function Tweets() {
 
       <br />
 
-      {(!isLoading && !hasTweets) && (
+      {(!isTweetsLoading && !hasTweets) && (
         <TwitterIcon className="twitter-logo"/>
       )}
 
@@ -141,48 +145,51 @@ export default function Tweets() {
           variant="contained"
           color="primary"
           size="small"
-          onClick={clear}
+          onClick={clearAllTweets}
         >
           <RefreshIcon />
         </Button>
       )}
       {' '}
-      {(hasTweets && count >= 1) && (
+      {(hasTweets && newTweetsCount >= 1) && (
         <Button
           variant="outlined"
           color="primary"
           size="small"
-          onClick={update}
+          onClick={getNewTweets}
         >
-          <TwitterIcon style={{ marginRight: 5 }} />{' '}
-          +{count > 99 ? 99 : count}
+          <TwitterIcon className="twitter-button-icon"/>{' '}
+          +{newTweetsCount > 99 ? 99 : newTweetsCount}
         </Button>
       )}
 
-      {isLoading && (
+      {isTweetsLoading && (
         <div className="loader-container">
           <CircularProgress />
         </div>
       )}
 
-      {hasTweets && tweets.map((value) => (
+      {hasTweets && tweets.map((tweet) => (
         <Paper
-          key={value.id}
+          key={tweet.id}
           elevation={3}
           className="tweet"
-          style={{ opacity: value.id === isApproveLoading ? 0.4 : 1 }}
+          style={getTweetStyle(tweet.id)}
         >
           <p>
-            <small>@{value.author} <span>· {fromNow(value.created_at)}</span></small>
+            <small>
+              @{tweet.author}{' '}
+              <span>· {fromNow(tweet.created_at)}</span>
+            </small>
           </p>
-          <p>{value.text}</p>
+          <p>{tweet.text}</p>
           <div className="tweet-action-area">
             <Button
               size="small"
               color="primary"
               variant="outlined"
-              disabled={value.id === isApproveLoading}
-              onClick={() => handlerTweetRemove(value)}
+              disabled={tweet.id === isTweetApproveLoading}
+              onClick={() => removeTweet(tweet)}
             >
               <DeleteIcon />
             </Button>
@@ -191,8 +198,8 @@ export default function Tweets() {
               size="small"
               color="primary"
               variant="contained"
-              disabled={value.id === isApproveLoading}
-              onClick={() => handlerTweetApprove(value)}
+              disabled={tweet.id === isTweetApproveLoading}
+              onClick={() => approveTweet(tweet)}
             >
               <CheckIcon />
             </Button>

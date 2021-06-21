@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react'
-import socketIOClient from 'socket.io-client'
-import Paper from '@material-ui/core/Paper'
-import Container from '@material-ui/core/Container'
-import Box from '@material-ui/core/Box'
+import {
+  Container,
+  Paper,
+  Box
+} from '@material-ui/core'
 
+import { websocketConnect } from '../config/websocket'
 import { fromNow } from '../helpers/date'
 import '../styles/page-telao.css'
 
@@ -11,21 +13,21 @@ export default function Telao() {
   const [tweets, setTweets] = useState([])
 
   useEffect(() => {
-    const socket = socketIOClient(process.env.REACT_APP_API_URL, { transport : ['websocket'] })
+    const socket = websocketConnect()
 
-    function handlerTweet(tweet) {
+    function handlerAddTweet(tweet) {
       setTweets(prevTweets => [tweet, ...prevTweets])
     }
-    function handlerClear() {
+    function handlerClearTweets() {
       setTweets([])
     }
 
-    socket.on("tweet", handlerTweet)
-    socket.on("clear", handlerClear)
+    socket.on("tweet", handlerAddTweet)
+    socket.on("clear", handlerClearTweets)
   
     return () => {
-      socket.off("tweet", handlerTweet)
-      socket.off("clear", handlerClear)
+      socket.off("tweet", handlerAddTweet)
+      socket.off("clear", handlerClearTweets)
     }
   }, [])
 
@@ -36,14 +38,21 @@ export default function Telao() {
           {tweets.map(({ id, text, author, created_at }) => (
             <Paper key={id} className="tweet fadein">
               <p>
-                <small>@{author} <span>· {fromNow(created_at)}</span></small>
+                <small>
+                  @{author}{' '}
+                  <span>· {fromNow(created_at)}</span>
+                </small>
               </p>
               <p>{text}</p>
             </Paper>
           ))}
         </Box>
       ) : (
-        <img className="logo-globo" src="logo-globo.png" alt="logo-globo"/>
+        <img
+          className="logo-globo"
+          src="/img/logo-globo.png"
+          alt="logo-globo"
+        />
       )}
     </Container>
   )

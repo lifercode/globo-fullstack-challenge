@@ -1,12 +1,14 @@
 import React from 'react'
-import Container from '@material-ui/core/Container'
-import Typography from '@material-ui/core/Typography'
-import Grid from '@material-ui/core/Grid'
-import Card from '@material-ui/core/Card'
-import CardActionArea from '@material-ui/core/CardActionArea'
-import CardContent from '@material-ui/core/CardContent'
-import Chip from '@material-ui/core/Chip'
-import Box from '@material-ui/core/Box'
+import {
+  CardActionArea,
+  CardContent,
+  Typography,
+  Container,
+  Grid,
+  Card,
+  Chip,
+  Box
+} from '@material-ui/core'
 
 import '../styles/page-home.css'
 
@@ -39,7 +41,7 @@ export default function Home() {
   return (
     <Container maxWidth="md">
       <Box className="header">
-        <img src="/logo-globo.png" alt="logo-globo" className="logo" />
+        <img src="/img/logo-globo.png" alt="logo-globo" className="logo" />
         <Typography variant="h2">
           Globo Fullstack Challenge
         </Typography>
@@ -69,7 +71,11 @@ export default function Home() {
       <Box className="footer">
         <Typography variant="p">
           by{' '}
-          <a href="https://github.com/lifercode" target="_blank" rel="noreferrer">
+          <a
+            href="https://github.com/lifercode"
+            target="_blank"
+            rel="noreferrer"
+          >
             <b>@lifercode</b>
           </a>
         </Typography>

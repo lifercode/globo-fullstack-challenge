@@ -8,7 +8,7 @@ export default function Preview() {
     <Box className="container">
       <Box className="device-container-phone">
         <img
-          src="/iphone.png"
+          src="/img/iphone.png"
           alt="device-phone-mockup"
           className="device-image device-image-phone"
         />
@@ -21,7 +21,7 @@ export default function Preview() {
       </Box>
       <Box className="device-container-tv">
         <img
-          src="/tv.png"
+          src="/img/tv.png"
           alt="device-tv-mockup"
           className="device-image device-image-tv"
         />

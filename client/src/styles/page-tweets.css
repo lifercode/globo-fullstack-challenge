@@ -43,3 +43,6 @@ svg.twitter-logo {
   opacity: 0.2;
   font-size: 100px;
 }
+.twitter-button-icon {
+  margin-right: 5px;
+}

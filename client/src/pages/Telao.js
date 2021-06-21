@@ -7,13 +7,11 @@ import Box from '@material-ui/core/Box'
 import { fromNow } from '../helpers/date'
 import '../styles/page-telao.css'
 
-const API_URL = "http://localhost:3002"
-
 export default function Telao() {
   const [tweets, setTweets] = useState([])
 
   useEffect(() => {
-    const socket = socketIOClient(API_URL, { transport : ['websocket'] })
+    const socket = socketIOClient(process.env.REACT_APP_API_URL, { transport : ['websocket'] })
 
     function handlerTweet(tweet) {
       setTweets(prevTweets => [tweet, ...prevTweets])

@@ -16,8 +16,6 @@ import { fromNow } from '../helpers/date'
 import api from '../config/api'
 import '../styles/page-tweets.css'
 
-const API_URL = "http://localhost:3002"
-
 export default function Tweets() {
   const [tweets, setTweets] = useState([])
   const [count, setCount] = useState(0)
@@ -76,7 +74,7 @@ export default function Tweets() {
   }
 
   useEffect(() => {
-    const socket = socketIOClient(API_URL, { transport : ['websocket'] })
+    const socket = socketIOClient(process.env.REACT_APP_API_URL, { transport : ['websocket'] })
 
     function handlerCount(value) {
       if (count === 0 || value <= 100) {

@@ -1,17 +1,15 @@
 const needle = require('needle')
 const { Tweet } = require('./models')
 
-const TOKEN = 'AAAAAAAAAAAAAAAAAAAAAHv2QgEAAAAAMFn2drWf8LLTMtxhsx5GLV3cKWk%3DtQWBa7wFoadzj98THWGIujLguT4WH21mXETMghgdq3xxTYyhQ4'
-
-const rulesURL = 'https://api.twitter.com/2/tweets/search/stream/rules'
-const streamURL = 'https://api.twitter.com/2/tweets/search/stream?tweet.fields=public_metrics,created_at&expansions=author_id'
+const rulesURL = process.env.TWITTER_API_URL + '/tweets/search/stream/rules'
+const streamURL = process.env.TWITTER_API_URL + '/tweets/search/stream?tweet.fields=public_metrics,created_at&expansions=author_id'
 
 const rules = [{ value: 'bbb' }]
 
 const requestOptions = {
   headers: {
     'content-type': 'application/json',
-    Authorization: `Bearer ${TOKEN}`,
+    Authorization: `Bearer ${process.env.TWITTER_API_TOKEN}`,
   },
 }
 

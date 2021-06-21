@@ -1,3 +1,4 @@
+require('dotenv').config()
 const express = require('express')
 const http = require('http')
 const { Server } = require("socket.io")
@@ -8,15 +9,12 @@ const { dbConnect } = require('./db')
 const twitterSetup = require('./twitter')
 const { Tweet } = require('./models')
 
-const PORT = 3002
-const CLIENT_URL = 'http://localhost:3000'
-const TWITTER_TOKEN = 'AAAAAAAAAAAAAAAAAAAAAHv2QgEAAAAAMFn2drWf8LLTMtxhsx5GLV3cKWk%3DtQWBa7wFoadzj98THWGIujLguT4WH21mXETMghgdq3xxTYyhQ4'
-const TWITTER_API_PREFIX = 'https://api.twitter.com/2/tweets/search/recent?query=%23'
+const TWITTER_API_PREFIX = '/tweets/search/recent?query=%23'
 const TWITTER_API_SUFIX = '&tweet.fields=created_at&expansions=author_id&user.fields=created_at'
 
 const serverConfig = {
   cors: {
-    origin: CLIENT_URL,
+    origin: process.env.CLIENT_URL,
     methods: ['GET', 'POST']
   }
 }
@@ -35,9 +33,9 @@ app.get('/', async (req, res) => {
 })
 
 app.get('/tweets/recent', async (req, res) => {
-  const endpoint = TWITTER_API_PREFIX + req.query.hashtag + TWITTER_API_SUFIX
+  const endpoint = process.env.TWITTER_API_URL + TWITTER_API_PREFIX + req.query.hashtag + TWITTER_API_SUFIX
   const result = await axios.get(endpoint, {
-    headers: {'Authorization': `Bearer ${TWITTER_TOKEN}`}
+    headers: {'Authorization': `Bearer ${process.env.TWITTER_API_TOKEN}`}
   })
   await Tweet.deleteMany({})
 
@@ -76,4 +74,6 @@ app.post('/approve', (req, res) => {
 
 io.on('connection', () => twitterSetup(io))
 
-server.listen(PORT, () => console.log(`listening on *:${PORT}`))
+server.listen(process.env.PORT, () =>
+  console.log(`listening on *:${process.env.PORT}`)
+)
